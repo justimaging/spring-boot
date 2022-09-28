@@ -47,6 +47,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * https://blog.csdn.net/ke1ying/article/details/121672933
+ * https://blog.csdn.net/sunshineKay/article/details/119028764
  * Configuration classes for servlet web servers
  * <p>
  * Those should be {@code @Import} in a regular auto-configuration class to guarantee

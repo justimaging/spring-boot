@@ -254,6 +254,7 @@ public class SpringApplication {
 	}
 
 	/**
+	 * 从spring.factories加载监听器、初始化器、后置处理器等bean
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
@@ -303,7 +304,7 @@ public class SpringApplication {
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
-			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);//启动命令java -jar xxx.jar --spring.profile.active=prod中的参数
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
