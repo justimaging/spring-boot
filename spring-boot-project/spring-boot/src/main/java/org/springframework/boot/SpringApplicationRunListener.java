@@ -35,14 +35,14 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  */
 public interface SpringApplicationRunListener {
 
-	/**
+	/**刚执行run方法时
 	 * Called immediately when the run method has first started. Can be used for very
 	 * early initialization.
 	 */
 	default void starting() {
 	}
 
-	/**
+	/**环境建立好时候
 	 * Called once the environment has been prepared, but before the
 	 * {@link ApplicationContext} has been created.
 	 * @param environment the environment
@@ -50,7 +50,7 @@ public interface SpringApplicationRunListener {
 	default void environmentPrepared(ConfigurableEnvironment environment) {
 	}
 
-	/**
+	/**上下文建立好的时候
 	 * Called once the {@link ApplicationContext} has been created and prepared, but
 	 * before sources have been loaded.
 	 * @param context the application context
@@ -58,7 +58,7 @@ public interface SpringApplicationRunListener {
 	default void contextPrepared(ConfigurableApplicationContext context) {
 	}
 
-	/**
+	/**上下文载入配置时候
 	 * Called once the application context has been loaded but before it has been
 	 * refreshed.
 	 * @param context the application context
@@ -66,7 +66,7 @@ public interface SpringApplicationRunListener {
 	default void contextLoaded(ConfigurableApplicationContext context) {
 	}
 
-	/**
+	/**上下文刷新完成后，run方法执行完之前
 	 * The context has been refreshed and the application has started but
 	 * {@link CommandLineRunner CommandLineRunners} and {@link ApplicationRunner
 	 * ApplicationRunners} have not been called.
@@ -76,7 +76,7 @@ public interface SpringApplicationRunListener {
 	default void started(ConfigurableApplicationContext context) {
 	}
 
-	/**
+	/**正在启动时
 	 * Called immediately before the run method finishes, when the application context has
 	 * been refreshed and all {@link CommandLineRunner CommandLineRunners} and
 	 * {@link ApplicationRunner ApplicationRunners} have been called.
@@ -86,7 +86,7 @@ public interface SpringApplicationRunListener {
 	default void running(ConfigurableApplicationContext context) {
 	}
 
-	/**
+	/**启动失败的时候
 	 * Called when a failure occurs when running the application.
 	 * @param context the application context or {@code null} if a failure occurred before
 	 * the context was created
