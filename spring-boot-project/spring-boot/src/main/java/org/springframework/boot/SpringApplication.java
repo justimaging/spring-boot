@@ -269,10 +269,12 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		this.webApplicationType = WebApplicationType.deduceFromClasspath();//判断当前容器类型 NONE SERVLET REACTIVE
+		//1、getSpringFactoriesInstances 加载spring.factories中ApplicationContextInitializer类型所配置的对象并实例化
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		//1、getSpringFactoriesInstances 加载spring.factories中ApplicationListener类型所配置的对象并实例化
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
-		this.mainApplicationClass = deduceMainApplicationClass();
+		this.mainApplicationClass = deduceMainApplicationClass();//找到主程序的类
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -297,7 +299,7 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		StopWatch stopWatch = new StopWatch();
+		StopWatch stopWatch = new StopWatch();//计时器 用于统计启动耗时
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
@@ -1245,7 +1247,7 @@ public class SpringApplication {
 	 * @return the running {@link ApplicationContext}
 	 */
 	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
-		return new SpringApplication(primarySources).run(args);
+		return new SpringApplication(primarySources).run(args);//先new 后run
 	}
 
 	/**
