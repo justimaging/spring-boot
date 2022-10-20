@@ -271,7 +271,7 @@ public class SpringApplication {
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();//判断当前容器类型 NONE SERVLET REACTIVE
 		//1、getSpringFactoriesInstances 加载spring.factories中ApplicationContextInitializer类型所配置的对象并实例化
-		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));//ApplicationListener接口允许在Spring刷新IOC容器(大名鼎鼎的applicationContext.refresh方法)之前，进行自定义的初始化工作。
 		//1、getSpringFactoriesInstances 加载spring.factories中ApplicationListener类型所配置的对象并实例化
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();//找到主程序的类
@@ -302,18 +302,18 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();//计时器 用于统计启动耗时
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
-		configureHeadlessProperty();
-		SpringApplicationRunListeners listeners = getRunListeners(args);
-		listeners.starting();
+		configureHeadlessProperty();//配置java.awt.headless Headless模式是系统的一种配置模式。在系统可能缺少显示设备、键盘或鼠标这些外设的情况下可以使用该模式。
+		SpringApplicationRunListeners listeners = getRunListeners(args); //SpringApplicationRunListeners 与ApplicationListener 不是同一种类型的监听器
+		listeners.starting();//通过SpringApplicationRunListeners 启动与ApplicationListener监听器的监听 并广播ApplicationStartingEvent事件
 		try {
-			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);//启动命令java -jar xxx.jar --spring.profile.active=prod中的参数
-			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
-			configureIgnoreBeanInfo(environment);
-			Banner printedBanner = printBanner(environment);
-			context = createApplicationContext();
-			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
-			refreshContext(context);
-			afterRefresh(context, applicationArguments);
+			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);//加载命令行的参数 如：启动命令java -jar xxx.jar --spring.profile.active=prod中的参数
+			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);//根据参数准备启动环境参数
+			configureIgnoreBeanInfo(environment);//“spring.beaninfo.ignore”，值为“true”表示跳过对BeanInfo类的搜索（通常用于首先没有为应用程序中的bean定义此类的情况）。
+			Banner printedBanner = printBanner(environment);//打印banner
+			context = createApplicationContext();//创建（实例化） AnnotationConfigServletWebServerApplicationContext
+			prepareContext(context, environment, listeners, applicationArguments, printedBanner);//准备基础信息 并加载beandefinition到context,扫描basepackage，解析xml文件获取beandefinition
+			refreshContext(context);//核心操作，实例化--初始化bean，启动Tomcat都在此
+			afterRefresh(context, applicationArguments);//在启动后的一些操作，预留实现方法，方便扩展
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
@@ -367,7 +367,7 @@ public class SpringApplication {
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
-		applyInitializers(context);
+		applyInitializers(context);//<=====执行初始化器方法
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
@@ -389,7 +389,7 @@ public class SpringApplication {
 		// Load the sources
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
-		load(context, sources.toArray(new Object[0]));
+		load(context, sources.toArray(new Object[0]));//加载beandefinition到context,扫描basepackage，解析xml文件获取bean
 		listeners.contextLoaded(context);
 	}
 
@@ -425,7 +425,7 @@ public class SpringApplication {
 		// Use names and ensure unique to protect against duplicates
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
-		AnnotationAwareOrderComparator.sort(instances);
+		AnnotationAwareOrderComparator.sort(instances);//factories实例排序
 		return instances;
 	}
 
@@ -553,7 +553,7 @@ public class SpringApplication {
 				: new DefaultResourceLoader(null);
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
 		if (this.bannerMode == Mode.LOG) {
-			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
+			return bannerPrinter.print(environment, this.mainApplicationClass, logger);//打印banner
 		}
 		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
 	}
@@ -585,7 +585,7 @@ public class SpringApplication {
 						"Unable create a default ApplicationContext, please specify an ApplicationContextClass", ex);
 			}
 		}
-		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
+		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);//采用默认构造器实例化
 	}
 
 	/**

@@ -34,7 +34,8 @@ import org.springframework.util.StringUtils;
 /**
  * {@link ApplicationContextInitializer} that delegates to other initializers that are
  * specified under a {@literal context.initializer.classes} environment property.
- *
+ *给springboot应用程序使用者提供了一个机会指定自己实现的ApplicationContextInitializer对应用程序做一些初始化工作。
+ * context.initializer.classes配置新增自定义的初始化器
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.0.0
@@ -51,6 +52,8 @@ public class DelegatingApplicationContextInitializer
 	@Override
 	public void initialize(ConfigurableApplicationContext context) {
 		ConfigurableEnvironment environment = context.getEnvironment();
+		// 从环境属性context.initializer.classes分析出各个ApplicationContextInitializer实现类
+		// 并应用它们，也就是实例化它们并调用它们的initialize(context)方法
 		List<Class<?>> initializerClasses = getInitializerClasses(environment);
 		if (!initializerClasses.isEmpty()) {
 			applyInitializerClasses(context, initializerClasses);
@@ -58,10 +61,15 @@ public class DelegatingApplicationContextInitializer
 	}
 
 	private List<Class<?>> getInitializerClasses(ConfigurableEnvironment env) {
+		// 环境属性context.initializer.classes是一个字符串，以逗号分割,
+		// 分隔开的每一部分是一个类的全名称，并且该类应该是一个ApplicationContextInitializer实现类
 		String classNames = env.getProperty(PROPERTY_NAME);
 		List<Class<?>> classes = new ArrayList<>();
 		if (StringUtils.hasLength(classNames)) {
 			for (String className : StringUtils.tokenizeToStringArray(classNames, ",")) {
+				// 获取每一个类名称，分析其对对应的ApplicationContextInitializer实现类,
+				// 如果某个类名称字符串并不对应classpath上的某个类，或者不是一个ApplicationContextInitializer
+				// 实现类，这里会抛出ClassNotFoundException异常
 				classes.add(getInitializerClass(className));
 			}
 		}
@@ -102,7 +110,7 @@ public class DelegatingApplicationContextInitializer
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void applyInitializers(ConfigurableApplicationContext context,
 			List<ApplicationContextInitializer<?>> initializers) {
-		initializers.sort(new AnnotationAwareOrderComparator());
+		initializers.sort(new AnnotationAwareOrderComparator());// 应用这些ApplicationContextInitializer之前先对他们进行排序
 		for (ApplicationContextInitializer initializer : initializers) {
 			initializer.initialize(context);
 		}

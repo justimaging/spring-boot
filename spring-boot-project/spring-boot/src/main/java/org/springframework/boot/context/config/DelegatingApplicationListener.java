@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link ApplicationListener} that delegates to other listeners that are specified under
  * a {@literal context.listener.classes} environment property.
- *
+ *通过配置context.listener.classes添加自定义监听器
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.0.0
