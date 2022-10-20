@@ -319,6 +319,9 @@ public class SpringApplication {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
 			listeners.started(context);
+			//在项目开发中，经常需要在项目启动的时候去读取配置文件、或者把数据库的数据加载到缓存中。
+			//Spring Boot提供了ApplicationRunner和CommandLineRunner来帮助我们实现这些需求，他们都是在Spring容器初始化完毕之后执行起run方法。
+			//用于启动程序后的操作
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -772,6 +775,7 @@ public class SpringApplication {
 		runners.addAll(context.getBeansOfType(CommandLineRunner.class).values());
 		AnnotationAwareOrderComparator.sort(runners);
 		for (Object runner : new LinkedHashSet<>(runners)) {
+			//ApplicationRunner、CommandLineRunner两者作用是一样的，区别在与前者run方法参数为ApplicationArguments****对象，是对原始参数做了封装，而后者为原始String数组。注：这些参数都是传递给main方法的参数。
 			if (runner instanceof ApplicationRunner) {
 				callRunner((ApplicationRunner) runner, args);
 			}
