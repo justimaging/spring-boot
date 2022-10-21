@@ -155,7 +155,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	protected void onRefresh() {
 		super.onRefresh();
 		try {
-			createWebServer();
+			createWebServer();//创建webserver 默认Tomcat, 其他有 undertow jetty
 		}
 		catch (Throwable ex) {
 			throw new ApplicationContextException("Unable to start web server", ex);
@@ -174,7 +174,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		WebServer webServer = this.webServer;
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
-			ServletWebServerFactory factory = getWebServerFactory();
+			ServletWebServerFactory factory = getWebServerFactory();//获取TomcatServletWebServerFactory的bean ,在实例化bean时会通过WebServerFactoryCustomizerBeanPostProcessor的postProcessBeforeInitialization，读取配置文件中的webserver配置设置server属性
 			this.webServer = factory.getWebServer(getSelfInitializer());
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
 					new WebServerGracefulShutdownLifecycle(this.webServer));

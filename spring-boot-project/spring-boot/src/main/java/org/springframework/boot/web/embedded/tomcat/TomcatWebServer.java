@@ -120,7 +120,7 @@ public class TomcatWebServer implements WebServer {
 				});
 
 				// Start the server to trigger initialization listeners
-				this.tomcat.start();
+				this.tomcat.start();//初始化监听器
 
 				// We can re-throw failure exception directly in the main thread
 				rethrowDeferredStartupExceptions();
@@ -134,7 +134,7 @@ public class TomcatWebServer implements WebServer {
 
 				// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 				// blocking non-daemon to stop immediate shutdown
-				startDaemonAwaitThread();
+				startDaemonAwaitThread();//启动后开始守护线程，这是程序不退出的原因
 			}
 			catch (Exception ex) {
 				stopSilently();

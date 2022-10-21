@@ -178,19 +178,21 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");
-		tomcat.setBaseDir(baseDir.getAbsolutePath());
-		Connector connector = new Connector(this.protocol);
+		tomcat.setBaseDir(baseDir.getAbsolutePath());//工作临时目录 C:\Users\ADMINI~1\AppData\Local\Temp\tomcat.8080.6074428561429542027 linux:/tmp/tomcat.端口.xxx
+		Connector connector = new Connector(this.protocol);//org.apache.coyote.http11.Http11NioProtocol
 		connector.setThrowOnFailure(true);
-		tomcat.getService().addConnector(connector);
+		// reloadable="true" 热加载：服务器会监听 class 文件改变，包括web-inf/class,wen-inf/lib,web-inf/web.xml等文件，若发生更改，则局部进行加载，不清空session ，不释放内存。开发中用的多，但是要考虑内存溢出的情况。
+		// autoDeploy="true" 热部署： 整个项目从新部署，包括你从新打上.war 文件。 会清空session ，释放内存。项目打包的时候用的多。
+		tomcat.getService().addConnector(connector);//给service添加connector <Context docBase="xxx" path="/xxx" autoDeploy="true"/>
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
-		tomcat.getHost().setAutoDeploy(false);
-		configureEngine(tomcat.getEngine());
+		tomcat.getHost().setAutoDeploy(false);//关闭热部署
+		configureEngine(tomcat.getEngine());//配置engine
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
 			tomcat.getService().addConnector(additionalConnector);
 		}
 		prepareContext(tomcat.getHost(), initializers);
-		return getTomcatWebServer(tomcat);
+		return getTomcatWebServer(tomcat);//实例化对象 TomcatWebServer
 	}
 
 	private void configureEngine(Engine engine) {
